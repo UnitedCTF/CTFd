@@ -35,7 +35,7 @@ services:
       - DOMAINS=ctf.unitedctf.ca
       - DRY_RUN=yes
     volumes:
-      - .data/certbot:/etc/letsencrypt/live/ctf.unitedctf.ca
+      - .data/certbot:/etc/letsencrypt/live
 
   nginx:
     build: ./nginx
@@ -45,7 +45,8 @@ services:
       - ctfd
       - certbot
     volumes:
-      - .data/certbot:/etc/ssl
+      - .data/certbot/ctf.unitedctf.ca:/etc/ssl
+    entrypoint: ["bash", "-c", "while [ ! -f \"/etc/ssl/fullchain.pem\" ]; do sleep 1; done; /docker-entrypoint.sh"]
     networks:
       default:
     depends_on: 
