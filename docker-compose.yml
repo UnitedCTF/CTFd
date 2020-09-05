@@ -26,15 +26,30 @@ services:
         default:
         internal:
 
-  nginx:
-    build: ./conf/nginx
+  certbot:
+    build: ./certbot
     ports:
-        - 80:80
-        - 443:443
+      - 80:80
+    environment:
+      - EMAIL=contact@unitedctf.ca
+      - DOMAINS=ctf.unitedctf.ca
+      - DRY_RUN=yes
+    volumes:
+      - .data/certbot:/etc/letsencrypt/live/ctf.unitedctf.ca
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 443:443
     depends_on:
-        - ctfd
+      - ctfd
+      - certbot
+    volumes:
+      - .data/certbot:/etc/ssl
     networks:
-        default:
+      default:
+    depends_on: 
+      - certbot
 
   db:
     image: mariadb:10.4.12
