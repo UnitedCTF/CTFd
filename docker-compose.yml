@@ -32,21 +32,24 @@ services:
       - 80:80
     environment:
       - EMAIL=contact@unitedctf.ca
-      - DOMAINS=ctf.unitedctf.ca
-      - DRY_RUN=yes
+      - DOMAINS=ctf.unitedctf.ca # change domain here
     volumes:
-      - .data/certbot:/etc/letsencrypt/live
+      - .data/certbot:/etc/letsencrypt
 
   nginx:
     build: ./nginx
     ports:
       - 443:443
+    environment:
+      - HOST=ctf.unitedctf.ca # change domain here
     depends_on:
       - ctfd
       - certbot
     volumes:
-      - .data/certbot/ctf.unitedctf.ca:/etc/ssl
-    entrypoint: ["bash", "-c", "while [ ! -f \"/etc/ssl/fullchain.pem\" ]; do sleep 1; done; /docker-entrypoint.sh"]
+      - .data/certbot:/etc/letsencrypt
+      - ./nginx/templates:/etc/nginx/templates
+      - ./nginx/docker-entrypoint.d/00-wait-for-certs.sh:/docker-entrypoint.d/00-wait-for-certs.sh
+      - ./nginx/docker-entrypoint.d/30-reload.sh:/docker-entrypoint.d/30-reload.sh
     networks:
       default:
     depends_on: 

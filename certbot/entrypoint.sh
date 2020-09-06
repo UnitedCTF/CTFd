@@ -8,7 +8,7 @@ fi
 
 nginx
 
-CMDLINE="certbot certonly --agree-tos --webroot -w /var/www/html -m \"$EMAIL\""
+CMDLINE="certbot certonly --keep --agree-tos --webroot -w /var/www/html -m \"$EMAIL\""
 readarray -td, DOMAINS <<< "$DOMAINS"
 for domain in $DOMAINS; do
     CMDLINE="$CMDLINE -d \"$domain\""
@@ -22,6 +22,6 @@ fi
 eval "$CMDLINE"
 
 while :; do
-    sleep 24h
+    sleep 12h
     certbot renew
 done
